@@ -4,24 +4,47 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:gravity="center"
     tools:context="com.learn2crack.nfc.MainActivity">
 
-    <EditText
+    <DigitalClock
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvClock"
+        android:layout_centerHorizontal="true"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <ImageView
+        android:layout_below="@+id/tvClock"
+        android:id="@+id/img5D"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/logo5d"
+        android:layout_centerInParent="true"
+        android:contentDescription="TODO" />
+
+    <TextView
+        android:layout_below="@+id/img5D"
         android:id="@+id/et_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_message"/>
+        android:text="@string/daucham"
+        android:textSize="30sp"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/getPos"
+        android:text="@string/get_position"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_below="@+id/et_message"/>
 
     <Button
         android:id="@+id/btn_write"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/et_message"
+        android:layout_below="@+id/getPos"
         android:layout_marginTop="@dimen/activity_horizontal_margin"
         android:text="@string/message_write_tag"
         style="@style/Widget.AppCompat.Button.Colored"/>

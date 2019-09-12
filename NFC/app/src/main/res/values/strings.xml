@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NFC</string>
+    <string name="app_name">NFC - 5D Agri Solutions</string>
     <string name="message_write_error">Error Writing Message !</string>
     <string name="message_write_success">Successfully written to Tag !</string>
     <string name="message_write_progress">Writing to Tag..</string>
@@ -8,4 +8,6 @@
     <string name="message_write_tag">Write to NFC Tag</string>
     <string name="message_tap_tag">Tap the NFC Tag to your device !</string>
     <string name="hint_message">Message</string>
+    <string name="get_position">Get Position</string>
+    <string name="daucham">.</string>
 </resources>

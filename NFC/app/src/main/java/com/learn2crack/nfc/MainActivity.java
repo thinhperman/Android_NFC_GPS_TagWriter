@@ -1,25 +1,42 @@
 package com.learn2crack.nfc;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements Listener{
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+
+public class MainActivity extends AppCompatActivity implements Listener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
+
+    private Location location;
+    private GoogleApiClient gac;
     
     public static final String TAG = MainActivity.class.getSimpleName();
 
-    private EditText mEtMessage;
+    private TextView mEtMessage;
     private Button mBtWrite;
     private Button mBtRead;
+    private Button mBtGetPos;
 
     private NFCWriteFragment mNfcWriteFragment;
     private NFCReadFragment mNfcReadFragment;
@@ -34,23 +51,68 @@ public class MainActivity extends AppCompatActivity implements Listener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        mEtMessage.setText(" ");
+
         initViews();
         initNFC();
     }
 
     private void initViews() {
 
-        mEtMessage = (EditText) findViewById(R.id.et_message);
+        mEtMessage = (TextView) findViewById(R.id.et_message);
         mBtWrite = (Button) findViewById(R.id.btn_write);
         mBtRead = (Button) findViewById(R.id.btn_read);
+        mBtGetPos = (Button) findViewById(R.id.getPos);
 
+        mBtGetPos.setOnClickListener(view -> getLocation());
         mBtWrite.setOnClickListener(view -> showWriteFragment());
         mBtRead.setOnClickListener(view -> showReadFragment());
     }
 
     private void initNFC(){
-
+        if (checkPlayServices()) {
+            // Building the GoogleApi client
+            buildGoogleApiClient();
+        }
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+    }
+
+//    public void dispLocation(View view) {
+//        getLocation();
+//    }
+
+    private void getLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Kiểm tra quyền hạn
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
+        } else {
+
+            location = LocationServices.FusedLocationApi.getLastLocation(gac);
+            if (location != null) {
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+                // Hiển thị
+                mEtMessage.setText(latitude + ", " + longitude);
+            } else {
+                mEtMessage.setText("Cannot display the position. " +
+                        "Are you activate the GPS?)");
+            }
+        }
+    }
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this, 1000).show();
+            } else {
+                Toast.makeText(this, "Device does not support!", Toast.LENGTH_LONG).show();
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 
 
@@ -140,5 +202,39 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 }
             }
         }
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        if (gac == null) {
+            gac = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API).build();
+        }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        gac.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(this, "Connection Error: " + connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
+    }
+
+    protected void onStart() {
+        gac.connect();
+        super.onStart();
+    }
+
+    protected void onStop() {
+        gac.disconnect();
+        super.onStop();
     }
 }
