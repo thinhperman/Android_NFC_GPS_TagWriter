@@ -10,4 +10,17 @@
     <string name="hint_message">Message</string>
     <string name="get_position">Get Position</string>
     <string name="daucham">.</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="latitude">Latitude:</string>
+    <string name="longitude">Longitude:</string>
+    <string name="space" />
+    <string name="status">Status:</string>
+    <string name="set_timer">Set Timer</string>
+    <string name="start">Start</string>
+    <string name="check_gps">Check GPS</string>
+    <string name="seconds">seconds</string>
+    <string name="remain">Remain:</string>
+    <string name="timer">Timer:</string>
+    <string name="five">5</string>
+    <string name="_5d_company">5D Company</string>
 </resources>

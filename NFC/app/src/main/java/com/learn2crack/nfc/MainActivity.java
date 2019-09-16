@@ -2,6 +2,7 @@ package com.learn2crack.nfc;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -10,9 +11,10 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,16 +29,19 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity implements Listener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
-
+    CountDownTimer count;
+    int index = 0;
     private Location location;
     private GoogleApiClient gac;
     
     public static final String TAG = MainActivity.class.getSimpleName();
 
     private TextView mEtMessage;
-    private Button mBtWrite;
-    private Button mBtRead;
-    private Button mBtGetPos;
+    private TextView tvLat;
+    private TextView tvLng;
+    private EditText etTimer;
+    public String msToWrite;
+    private TextView tvRemainTime;
 
     private NFCWriteFragment mNfcWriteFragment;
     private NFCReadFragment mNfcReadFragment;
@@ -51,22 +56,54 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        mEtMessage.setText(" ");
-
         initViews();
         initNFC();
     }
 
     private void initViews() {
-
-        mEtMessage = (TextView) findViewById(R.id.et_message);
-        mBtWrite = (Button) findViewById(R.id.btn_write);
-        mBtRead = (Button) findViewById(R.id.btn_read);
-        mBtGetPos = (Button) findViewById(R.id.getPos);
+        mEtMessage = findViewById(R.id.tv_message);
+        tvLat = findViewById(R.id.tv_lat);
+        tvLng = findViewById(R.id.tv_lng);
+        Button mBtWrite = findViewById(R.id.btn_write);
+        Button mBtRead = findViewById(R.id.btn_read);
+        Button mBtGetPos = findViewById(R.id.getPos);
+        Button mBtStart = findViewById(R.id.startApp);
+        etTimer = findViewById(R.id.etTimer);
+        tvRemainTime = findViewById(R.id.tvRemainTime);
 
         mBtGetPos.setOnClickListener(view -> getLocation());
         mBtWrite.setOnClickListener(view -> showWriteFragment());
         mBtRead.setOnClickListener(view -> showReadFragment());
+        mBtStart.setOnClickListener(view -> setTimer());
+    }
+
+    private void setTimer(){
+        String sTimer;
+        long lTimer;
+
+        try{
+            sTimer = etTimer.getText().toString();
+            lTimer = Long.parseLong(sTimer);
+
+            count = new CountDownTimer(lTimer*1000, 1000) {
+                @Override
+                public void onTick(long l) {
+                    tvRemainTime.setText("Remain: " + String.valueOf(l/1000) + " s");
+
+                    getLocation();
+                }
+
+                @Override
+                public void onFinish() {
+                    showWriteFragment();
+                }
+            };
+        } catch (NumberFormatException e) {
+            Context context = getApplicationContext();
+            Toast.makeText(context, (CharSequence) e, Toast.LENGTH_LONG).show();
+        }
+
+        count.start();
     }
 
     private void initNFC(){
@@ -76,10 +113,6 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         }
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
     }
-
-//    public void dispLocation(View view) {
-//        getLocation();
-//    }
 
     private void getLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -92,11 +125,17 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
             if (location != null) {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
+
                 // Hiển thị
-                mEtMessage.setText(latitude + ", " + longitude);
+                tvLat.setText(" " + latitude);
+                tvLng.setText(" " + longitude);
+
+                msToWrite = latitude + " " + longitude;
+
+                mEtMessage.setText(" "+"GPS OK");
             } else {
-                mEtMessage.setText("Cannot display the position. " +
-                        "Are you activate the GPS?)");
+                Context context = getApplicationContext();
+                Toast.makeText(context, "Cannot display the position. " + "Are you activate the GPS?", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -142,6 +181,10 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
     }
 
+    private void showMapFragment(){
+
+    }
+
     @Override
     public void onDialogDisplayed() {
 
@@ -179,11 +222,12 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
     @Override
     protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-        Log.d(TAG, "onNewIntent: "+intent.getAction());
+        Log.d(TAG, "onNewIntent: " + intent.getAction());
 
-        if(tag != null) {
+        if (tag != null) {
             Toast.makeText(this, getString(R.string.message_tag_detected), Toast.LENGTH_SHORT).show();
             Ndef ndef = Ndef.get(tag);
 
@@ -191,13 +235,13 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
                 if (isWrite) {
 
-                    String messageToWrite = mEtMessage.getText().toString();
+                    String messageToWrite = msToWrite;
                     mNfcWriteFragment = (NFCWriteFragment) getFragmentManager().findFragmentByTag(NFCWriteFragment.TAG);
-                    mNfcWriteFragment.onNfcDetected(ndef,messageToWrite);
+                    mNfcWriteFragment.onNfcDetected(ndef, messageToWrite);
 
                 } else {
 
-                    mNfcReadFragment = (NFCReadFragment)getFragmentManager().findFragmentByTag(NFCReadFragment.TAG);
+                    mNfcReadFragment = (NFCReadFragment) getFragmentManager().findFragmentByTag(NFCReadFragment.TAG);
                     mNfcReadFragment.onNfcDetected(ndef);
                 }
             }
