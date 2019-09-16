@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    tools:context="com.learn2crack.nfc.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/appInfo"
+        android:gravity="center">
+
+        <DigitalClock
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvClock"
+            android:textSize="40sp"
+            android:textStyle="bold"/>
+
+        <ImageView
+            android:contentDescription="@string/_5d_company"
+            android:id="@+id/img5D"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/logo5d" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/setupTimer"
+        android:layout_below="@id/appInfo"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/timer"
+            android:textSize="20sp"
+            android:gravity="center_vertical"/>
+
+        <EditText
+            android:inputType="text"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:autofillHints="@string/seconds"
+            android:id="@+id/etTimer"
+            android:text="@string/five"
+            android:maxLines="1"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/tvRemainTime"
+            android:textColor="@color/colorAccent"
+            android:textSize="20sp"
+            android:gravity="center_vertical"
+            android:text="@string/remain"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/setupTimer"
+        android:gravity="center"
+        android:id="@+id/btnFunction"
+        android:layout_marginTop="10dp">
+
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/startApp"
+            android:text="@string/start"
+            style="@style/Widget.AppCompat.Button.Colored" />
+
+        <Button
+            android:id="@+id/getPos"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:text="@string/check_gps" />
+
+        <Button
+            android:id="@+id/btn_write"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:text="@string/message_write_tag"
+            style="@style/Widget.AppCompat.Button.Colored"/>
+
+        <Button
+            android:id="@+id/btn_read"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:text="@string/message_read_tag"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnFunction"
+        android:id="@+id/posData"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/status"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/space"
+                android:id="@+id/tv_message"
+                android:textSize="20sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/latitude"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/space"
+                android:id="@+id/tv_lat"
+                android:textSize="20sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/longitude"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/space"
+                android:id="@+id/tv_lng"
+                android:textSize="20sp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>
