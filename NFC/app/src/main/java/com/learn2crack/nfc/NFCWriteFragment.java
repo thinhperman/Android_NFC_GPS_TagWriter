@@ -83,10 +83,10 @@ public class NFCWriteFragment extends DialogFragment {
                 String messageTotal;
 
                 if(message2 != null){
-                    messageTotal = message + message2;
+                    messageTotal = message + " " + message2 + " ";
                 }
                 else{
-                    messageTotal = message;
+                    messageTotal = message + " ";
                 }
 
                 Log.d(TAG, "readFromNFC: " + messageTotal);
