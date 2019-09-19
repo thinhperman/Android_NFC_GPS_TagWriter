@@ -20,8 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:src="@drawable/ic_nfc"
-        android:tint="@color/colorAccent"/>
+        android:src="@drawable/logo5d" />
 
     <ProgressBar
         android:id="@+id/progress"

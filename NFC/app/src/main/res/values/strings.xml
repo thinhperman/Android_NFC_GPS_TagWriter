@@ -24,4 +24,6 @@
     <string name="five">5</string>
     <string name="_5d_company">5D Company</string>
     <string name="ndef">Tag Type:</string>
+    <string name="size">Tag Size:</string>
+    <string name="tag_remaining_size">Tag Remaining Size:</string>
 </resources>

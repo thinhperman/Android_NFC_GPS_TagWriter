@@ -6,6 +6,7 @@ import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.tech.Ndef;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,6 +69,7 @@ public class NFCReadFragment extends DialogFragment {
             String message = new String(ndefMessage.getRecords()[0].getPayload());
             Log.d(TAG, "readFromNFC: "+message);
             mTvMessage.setText(message);
+            mTvMessage.setMovementMethod(new ScrollingMovementMethod());
             ndef.close();
 
         } catch (IOException | FormatException e) {

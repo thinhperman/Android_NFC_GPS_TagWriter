@@ -19,11 +19,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:src="@drawable/ic_nfc"
-        android:tint="@color/colorAccent"
+        android:src="@drawable/logo5d"
         android:layout_gravity="center"/>
 
     <TextView
+        android:gravity="center_horizontal"
+        android:maxLines="10"
+        android:scrollbars = "vertical"
         android:id="@+id/tv_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -45,7 +45,7 @@
 
         <EditText
             android:inputType="text"
-            android:layout_width="200dp"
+            android:layout_width="150dp"
             android:layout_height="match_parent"
             android:autofillHints="@string/seconds"
             android:id="@+id/etTimer"
@@ -64,7 +64,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:layout_below="@+id/setupTimer"
         android:gravity="center"
         android:id="@+id/btnFunction"
@@ -72,7 +72,7 @@
 
         <Button
             android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_height="match_parent"
             android:id="@+id/startApp"
             android:text="@string/start"
             style="@style/Widget.AppCompat.Button.Colored" />
@@ -81,13 +81,21 @@
             android:id="@+id/getPos"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_height="match_parent"
             android:text="@string/check_gps" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:id="@+id/btnFunctionNFC"
+        android:layout_below="@+id/btnFunction"
+        android:gravity="center">
 
         <Button
             android:id="@+id/btn_write"
             android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_height="match_parent"
             android:text="@string/message_write_tag"
             style="@style/Widget.AppCompat.Button.Colored"/>
 
@@ -95,17 +103,17 @@
             android:id="@+id/btn_read"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_height="match_parent"
             android:text="@string/message_read_tag"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/btnFunction"
+        android:layout_below="@id/btnFunctionNFC"
         android:id="@+id/posData"
         android:orientation="vertical"
-        android:layout_marginTop="10dp">
+        android:layout_margin="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -115,14 +123,50 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/ndef"
-                android:textSize="20sp"/>
+                android:textSize="15sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/space"
                 android:id="@+id/tv_ndef"
-                android:textSize="20sp"/>
+                android:textSize="15sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/size"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/space"
+                android:id="@+id/tv_tag_size"
+                android:textSize="15sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/tag_remaining_size"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/space"
+                android:id="@+id/tv_tag_remain_size"
+                android:textSize="15sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -133,14 +177,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/status"
-                android:textSize="20sp"/>
+                android:textSize="15sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/space"
                 android:id="@+id/tv_message"
-                android:textSize="20sp"/>
+                android:textSize="15sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -153,14 +197,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/latitude"
-                android:textSize="20sp"/>
+                android:textSize="15sp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/space"
                 android:id="@+id/tv_lat"
-                android:textSize="20sp"/>
+                android:textSize="15sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -173,14 +217,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/longitude"
-                android:textSize="20sp"/>
+                android:textSize="15sp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/space"
                 android:id="@+id/tv_lng"
-                android:textSize="20sp"/>
+                android:textSize="15sp"/>
         </LinearLayout>
 
     </LinearLayout>
