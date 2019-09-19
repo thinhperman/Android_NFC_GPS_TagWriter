@@ -10,6 +10,7 @@ import android.location.Location;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -42,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
     private EditText etTimer;
     public String msToWrite;
     private TextView tvRemainTime;
+    private TextView tvNdef;
+    private String output[];
 
     private NFCWriteFragment mNfcWriteFragment;
     private NFCReadFragment mNfcReadFragment;
@@ -64,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         mEtMessage = findViewById(R.id.tv_message);
         tvLat = findViewById(R.id.tv_lat);
         tvLng = findViewById(R.id.tv_lng);
+        tvNdef = findViewById(R.id.tv_ndef);
         Button mBtWrite = findViewById(R.id.btn_write);
         Button mBtRead = findViewById(R.id.btn_read);
         Button mBtGetPos = findViewById(R.id.getPos);
@@ -95,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
                 @Override
                 public void onFinish() {
+                    showReadFragment();
+
                     showWriteFragment();
                 }
             };
@@ -134,8 +141,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
                 mEtMessage.setText(" "+"GPS OK");
             } else {
-                Context context = getApplicationContext();
-                Toast.makeText(context, "Cannot display the position. " + "Are you activate the GPS?", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Cannot display the position. " + "Are you activate the GPS?", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -220,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
             mNfcAdapter.disableForegroundDispatch(this);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -231,16 +238,21 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
             Toast.makeText(this, getString(R.string.message_tag_detected), Toast.LENGTH_SHORT).show();
             Ndef ndef = Ndef.get(tag);
 
+            String s = String.valueOf(ndef.getType());
+            output = s.split(".");
+
+            tvNdef.setText(" " + s);
+
+//            Toast.makeText(this, s, Toast.LENGTH_LONG).show();
+
             if (isDialogDisplayed) {
 
                 if (isWrite) {
-
                     String messageToWrite = msToWrite;
                     mNfcWriteFragment = (NFCWriteFragment) getFragmentManager().findFragmentByTag(NFCWriteFragment.TAG);
                     mNfcWriteFragment.onNfcDetected(ndef, messageToWrite);
 
                 } else {
-
                     mNfcReadFragment = (NFCReadFragment) getFragmentManager().findFragmentByTag(NFCReadFragment.TAG);
                     mNfcReadFragment.onNfcDetected(ndef);
                 }
@@ -273,12 +285,20 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
     }
 
     protected void onStart() {
-        gac.connect();
         super.onStart();
+        try {
+            gac.connect();
+        } catch (Exception e) {
+            Toast.makeText(this, (CharSequence) e, Toast.LENGTH_LONG).show();
+        }
     }
 
     protected void onStop() {
-        gac.disconnect();
         super.onStop();
+        try {
+            gac.disconnect();
+        } catch (Exception e) {
+            Toast.makeText(this, (CharSequence) e, Toast.LENGTH_LONG).show();
+        }
     }
 }

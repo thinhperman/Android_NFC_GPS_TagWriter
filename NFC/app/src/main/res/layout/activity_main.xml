@@ -105,7 +105,7 @@
         android:layout_below="@id/btnFunction"
         android:id="@+id/posData"
         android:orientation="vertical"
-        android:layout_marginTop="10dp">
+        android:padding="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
