@@ -251,28 +251,9 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
             int iSize = ndef.getMaxSize();
 
-            try {
-                ndef.connect();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            NdefMessage ndefMessage = null;
-            try {
-                ndefMessage = ndef.getNdefMessage();
-            } catch (FormatException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String message = new String(ndefMessage.getRecords()[0].getPayload());
-
-            int sizeOfMessage = message.length();
-
-            int remainSize = iSize - sizeOfMessage;
-
             tvNdef.setText(" " + output[1]);
             tvTagSize.setText(" " + iSize + " " + "bytes");
-            tvTagRemainSize.setText(""+remainSize+""+"bytes");
+            tvTagRemainSize.setText(""+iSize+""+"bytes");
 
 //            Toast.makeText(this, s, Toast.LENGTH_LONG).show();
 

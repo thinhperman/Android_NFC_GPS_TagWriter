@@ -78,7 +78,7 @@ public class NFCWriteFragment extends DialogFragment {
                 //Connect to tag
                 ndef.connect();
 
-                int iSize = ndef.getMaxSize();
+//                int iSize = ndef.getMaxSize();
                 NdefMessage ndefMessage = ndef.getNdefMessage();
                 String message2 = new String(ndefMessage.getRecords()[0].getPayload());
                 String messageTotal;
