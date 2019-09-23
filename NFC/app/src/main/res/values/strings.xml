@@ -9,7 +9,7 @@
     <string name="message_tap_tag">Tap the NFC Tag to your device !</string>
     <string name="hint_message">Message</string>
     <string name="get_position">Get Position</string>
-    <string name="daucham">.</string>
+    <string name="dau_cham">.</string>
     <string name="title_activity_maps">Map</string>
     <string name="latitude">Latitude:</string>
     <string name="longitude">Longitude:</string>
@@ -26,4 +26,6 @@
     <string name="ndef">Tag Type:</string>
     <string name="size">Tag Size:</string>
     <string name="tag_remaining_size">Tag Remaining Size:</string>
+    <string name="timestamp">Timestamp:</string>
+    <string name="id">Id:</string>
 </resources>

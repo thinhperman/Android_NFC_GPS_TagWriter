@@ -33,7 +33,7 @@ public class NFCReadFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_read,container,false);
+        View view = inflater.inflate(R.layout.fragment_read, container, false);
         initViews(view);
         return view;
     }
@@ -46,7 +46,7 @@ public class NFCReadFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mListener = (MainActivity)context;
+        mListener = (MainActivity) context;
         mListener.onDialogDisplayed();
     }
 
@@ -56,18 +56,23 @@ public class NFCReadFragment extends DialogFragment {
         mListener.onDialogDismissed();
     }
 
-    public void onNfcDetected(Ndef ndef){
-
+    public void onNfcDetected(Ndef ndef) {
         readFromNFC(ndef);
     }
 
     private void readFromNFC(Ndef ndef) {
-
+        String message="";
         try {
             ndef.connect();
             NdefMessage ndefMessage = ndef.getNdefMessage();
-            String message = new String(ndefMessage.getRecords()[0].getPayload());
-            Log.d(TAG, "readFromNFC: "+message);
+
+            try {
+                message = new String(ndefMessage.getRecords()[0].getPayload());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            Log.d(TAG, "readFromNFC: " + message);
             mTvMessage.setText(message);
             mTvMessage.setMovementMethod(new ScrollingMovementMethod());
             ndef.close();

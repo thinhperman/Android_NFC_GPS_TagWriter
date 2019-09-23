@@ -2,23 +2,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:gravity="center"
     tools:context="com.learn2crack.nfc.MainActivity">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/appInfo"
         android:gravity="center">
 
         <DigitalClock
+            android:id="@+id/tvClock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tvClock"
             android:textSize="40sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <ImageView
             android:contentDescription="@string/_5d_company"
@@ -78,11 +78,18 @@
             style="@style/Widget.AppCompat.Button.Colored" />
 
         <Button
-            android:id="@+id/getPos"
+            android:id="@+id/cancelApp"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:text="@string/check_gps" />
+            android:text="Stop" />
+
+        <Button
+        android:id="@+id/getPos"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:text="@string/check_gps" />
     </LinearLayout>
 
     <LinearLayout
@@ -105,6 +112,13 @@
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:text="@string/message_read_tag"/>
+
+        <Button
+            android:id="@+id/btn_exit"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:text="@string/message_write_tag"
+            style="@style/Widget.AppCompat.Button.Colored"/>
     </LinearLayout>
 
     <LinearLayout
@@ -114,6 +128,24 @@
         android:id="@+id/posData"
         android:orientation="vertical"
         android:layout_margin="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/id"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/space"
+                android:id="@+id/tv_idTag"
+                android:textSize="15sp"/>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -148,24 +180,6 @@
                 android:layout_height="match_parent"
                 android:text="@string/space"
                 android:id="@+id/tv_tag_size"
-                android:textSize="15sp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/tag_remaining_size"
-                android:textSize="15sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/space"
-                android:id="@+id/tv_tag_remain_size"
                 android:textSize="15sp"/>
         </LinearLayout>
 
@@ -226,6 +240,27 @@
                 android:id="@+id/tv_lng"
                 android:textSize="15sp"/>
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/timestamp"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/space"
+                android:id="@+id/tv_timestamp"
+                android:textSize="15sp"/>
+        </LinearLayout>
+
 
     </LinearLayout>
 </RelativeLayout>

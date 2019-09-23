@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.nfc.FormatException;
-import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
@@ -33,13 +31,19 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements Listener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements Listener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     CountDownTimer count;
+    Timer timer;
+
     int index = 0;
     private Location location;
     private GoogleApiClient gac;
-    
+
     public static final String TAG = MainActivity.class.getSimpleName();
 
     private TextView mEtMessage;
@@ -50,7 +54,8 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
     private TextView tvRemainTime;
     private TextView tvNdef;
     private TextView tvTagSize;
-    private TextView tvTagRemainSize;
+    private TextView tvTimestamp;
+    private TextView tvIdTag;
 
     private NFCWriteFragment mNfcWriteFragment;
     private NFCReadFragment mNfcReadFragment;
@@ -74,33 +79,48 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         tvLat = findViewById(R.id.tv_lat);
         tvLng = findViewById(R.id.tv_lng);
         tvNdef = findViewById(R.id.tv_ndef);
+        tvIdTag = findViewById(R.id.tv_idTag);
+
         Button mBtWrite = findViewById(R.id.btn_write);
         Button mBtRead = findViewById(R.id.btn_read);
         Button mBtGetPos = findViewById(R.id.getPos);
         Button mBtStart = findViewById(R.id.startApp);
+        Button mBtStop = findViewById(R.id.cancelApp);
+
         etTimer = findViewById(R.id.etTimer);
         tvRemainTime = findViewById(R.id.tvRemainTime);
         tvTagSize = findViewById(R.id.tv_tag_size);
-        tvTagRemainSize = findViewById(R.id.tv_tag_remain_size);
+        tvTimestamp = findViewById(R.id.tv_timestamp);
 
         mBtGetPos.setOnClickListener(view -> getLocation());
         mBtWrite.setOnClickListener(view -> showWriteFragment());
         mBtRead.setOnClickListener(view -> showReadFragment());
         mBtStart.setOnClickListener(view -> setTimer());
+        mBtStop.setOnClickListener(view -> canelTimer());
+
+        setTimer();
     }
 
-    private void setTimer(){
+    private void canelTimer(){
+        count.cancel();
+    }
+
+    private void startTimer(){
+        count.start();
+    }
+
+    private void setTimer() {
         String sTimer;
         long lTimer;
 
-        try{
+        try {
             sTimer = etTimer.getText().toString();
             lTimer = Long.parseLong(sTimer);
 
-            count = new CountDownTimer(lTimer*1000, 1000) {
+            count = new CountDownTimer(lTimer * 1000, 1000) {
                 @Override
                 public void onTick(long l) {
-                    tvRemainTime.setText("Remain: " + String.valueOf(l/1000) + " s");
+                    tvRemainTime.setText("Remain: " + l / 1000 + " s");
 
                     getLocation();
                 }
@@ -108,9 +128,6 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
                 @Override
                 public void onFinish() {
                     showWriteFragment();
-                    if (mNfcWriteFragment == null) {
-                        setTimer();
-                    }
                 }
             };
         } catch (NumberFormatException e) {
@@ -121,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         count.start();
     }
 
-    private void initNFC(){
+    private void initNFC() {
         if (checkPlayServices()) {
             // Building the GoogleApi client
             buildGoogleApiClient();
@@ -130,24 +147,33 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
     }
 
     private void getLocation() {
+        DecimalFormat fotmatLat = new DecimalFormat("##.######");
+        DecimalFormat fotmatLng = new DecimalFormat("###.######");
+
+        Long lTimeStamp = System.currentTimeMillis() / 1000;
+        String sTimeStamp = lTimeStamp.toString();
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Kiểm tra quyền hạn
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
         } else {
 
             location = LocationServices.FusedLocationApi.getLastLocation(gac);
             if (location != null) {
-                double latitude = location.getLatitude();
-                double longitude = location.getLongitude();
+                double dLatitude = location.getLatitude();
+                double dLongitude = location.getLongitude();
+
+                String sLatitue = fotmatLat.format(dLatitude);
+                String sLongitude = fotmatLng.format(dLongitude);
 
                 // Hiển thị
-                tvLat.setText(" " + latitude);
-                tvLng.setText(" " + longitude);
+                tvLat.setText(" " + sLatitue);
+                tvLng.setText(" " + sLongitude);
+                tvTimestamp.setText(" " + sTimeStamp);
 
-                msToWrite = latitude + " " + longitude;
+                msToWrite = sTimeStamp + ":" + sLatitue + "-" + sLongitude + "\r\n";
 
-                mEtMessage.setText(" "+"GPS OK");
+                mEtMessage.setText(" " + "GPS OK");
             } else {
                 Toast.makeText(this, "Cannot display the position. " + "Are you activate the GPS?", Toast.LENGTH_LONG).show();
             }
@@ -179,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
             mNfcWriteFragment = NFCWriteFragment.newInstance();
         }
-        mNfcWriteFragment.show(getFragmentManager(),NFCWriteFragment.TAG);
+        mNfcWriteFragment.show(getFragmentManager(), NFCWriteFragment.TAG);
 
     }
 
@@ -191,11 +217,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
             mNfcReadFragment = NFCReadFragment.newInstance();
         }
-        mNfcReadFragment.show(getFragmentManager(),NFCReadFragment.TAG);
-
-    }
-
-    private void showMapFragment(){
+        mNfcReadFragment.show(getFragmentManager(), NFCReadFragment.TAG);
 
     }
 
@@ -210,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
         isDialogDisplayed = false;
         isWrite = false;
+        setTimer();
     }
 
     @Override
@@ -218,19 +241,19 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         IntentFilter ndefDetected = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
         IntentFilter techDetected = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
-        IntentFilter[] nfcIntentFilter = new IntentFilter[]{techDetected,tagDetected,ndefDetected};
+        IntentFilter[] nfcIntentFilter = new IntentFilter[]{techDetected, tagDetected, ndefDetected};
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        if(mNfcAdapter!= null)
+        if (mNfcAdapter != null)
             mNfcAdapter.enableForegroundDispatch(this, pendingIntent, nfcIntentFilter, null);
-
+        initNFC();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if(mNfcAdapter!= null)
+        if (mNfcAdapter != null)
             mNfcAdapter.disableForegroundDispatch(this);
     }
 
@@ -244,22 +267,23 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
         if (tag != null) {
             Toast.makeText(this, getString(R.string.message_tag_detected), Toast.LENGTH_SHORT).show();
-            Ndef ndef = Ndef.get(tag);
 
+            tvIdTag.setText(Arrays.toString(tag.getId()));
+
+            Ndef ndef = Ndef.get(tag);
             String sType = String.valueOf(ndef.getType());
             String[] output = sType.split("ndef.");
 
-            int iSize = ndef.getMaxSize();
+            int iiSize = ndef.getMaxSize();
 
             tvNdef.setText(" " + output[1]);
-            tvTagSize.setText(" " + iSize + " " + "bytes");
-            tvTagRemainSize.setText(""+iSize+""+"bytes");
+            tvTagSize.setText(" " + iiSize + " " + "bytes");
 
-//            Toast.makeText(this, s, Toast.LENGTH_LONG).show();
+            getLocation();
 
             if (isDialogDisplayed) {
-
                 if (isWrite) {
+                    getLocation();
                     String messageToWrite = msToWrite;
                     mNfcWriteFragment = (NFCWriteFragment) getFragmentManager().findFragmentByTag(NFCWriteFragment.TAG);
                     mNfcWriteFragment.onNfcDetected(ndef, messageToWrite);
@@ -311,5 +335,6 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         } catch (Exception e) {
             Toast.makeText(this, (CharSequence) e, Toast.LENGTH_LONG).show();
         }
+        this.
     }
 }
