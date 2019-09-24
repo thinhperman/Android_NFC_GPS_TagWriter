@@ -7,12 +7,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
+import android.nfc.NfcEvent;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
+import android.nfc.tech.NdefFormatable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -67,7 +71,8 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toast.makeText(this, "Hello!",Toast.LENGTH_LONG).show();
+        showToast("Hello!");
+        //Toast.makeText(this, "Hello!",Toast.LENGTH_LONG).show();
 
         initViews();
         initNFC();
@@ -104,7 +109,9 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
     private void exitApp(){
         count.cancel();
-        Toast.makeText(this, "Goodbye!",Toast.LENGTH_LONG).show();
+
+        showToast("Goodbye!");
+        //Toast.makeText(this, "Goodbye!",Toast.LENGTH_LONG).show();
 
         final Timer tt = new Timer();
         tt.schedule(new TimerTask() {
@@ -148,7 +155,9 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
             };
         } catch (NumberFormatException e) {
             Context context = getApplicationContext();
-            Toast.makeText(context, (CharSequence) e, Toast.LENGTH_LONG).show();
+
+            showToast(String.valueOf(e));
+            //Toast.makeText(context, (CharSequence) e, Toast.LENGTH_LONG).show();
         }
 
         count.start();
@@ -160,16 +169,6 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
             buildGoogleApiClient();
         }
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-//
-//            if (mNfcAdapter == null) {
-//                Toast.makeText(this, "This device doesn't support NFC.",
-//                        Toast.LENGTH_LONG).show();
-//                finish();
-//            } else if (!mNfcAdapter.isEnabled()) {
-//                Toast.makeText(this, "NFC is disabled.",
-//                        Toast.LENGTH_LONG).show();
-//                finish();
-//            }
     }
 
     private void getLocation() {
@@ -201,7 +200,8 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
                 mEtMessage.setText(" " + "GPS OK");
             } else {
-                Toast.makeText(this, "Cannot display the position. " + "Are you activate the GPS?", Toast.LENGTH_LONG).show();
+                showToast("Cannot display the position. Are you activate the GPS?");
+                //Toast.makeText(this, "Cannot display the position. " + "Are you activate the GPS?", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -212,7 +212,8 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                 GooglePlayServicesUtil.getErrorDialog(resultCode, this, 1000).show();
             } else {
-                Toast.makeText(this, "Device does not support!", Toast.LENGTH_LONG).show();
+                showToast("Device does not support!");
+                //Toast.makeText(this, "Device does not support!", Toast.LENGTH_LONG).show();
                 finish();
             }
             return false;
@@ -264,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
     @Override
     protected void onResume() {
         super.onResume();
+
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         IntentFilter ndefDetected = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
         IntentFilter techDetected = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
@@ -271,8 +273,10 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        if (mNfcAdapter != null)
+        if (mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, pendingIntent, nfcIntentFilter, null);
+        }
+
         initNFC();
     }
 
@@ -292,12 +296,16 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         Log.d(TAG, "onNewIntent: " + intent.getAction());
 
         if (tag != null) {
-            Toast.makeText(this, getString(R.string.message_tag_detected), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, getString(R.string.message_tag_detected), Toast.LENGTH_SHORT).show();
 
             tvIdTag.setText(" " + Arrays.toString(tag.getId()));
 
             Ndef ndef = Ndef.get(tag);
+
+            NdefFormatable format = NdefFormatable.get(tag);
+
             String sType = String.valueOf(ndef.getType());
+
             String[] output = sType.split("ndef.");
 
             int iiSize = ndef.getMaxSize();
@@ -312,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
                     getLocation();
                     String messageToWrite = msToWrite;
                     mNfcWriteFragment = (NFCWriteFragment) getFragmentManager().findFragmentByTag(NFCWriteFragment.TAG);
-                    mNfcWriteFragment.onNfcDetected(ndef, messageToWrite);
+                    mNfcWriteFragment.onNfcDetected(ndef, format, messageToWrite);
                 } else {
                     mNfcReadFragment = (NFCReadFragment) getFragmentManager().findFragmentByTag(NFCReadFragment.TAG);
                     mNfcReadFragment.onNfcDetected(ndef);
@@ -350,7 +358,8 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         try {
             gac.connect();
         } catch (Exception e) {
-            Toast.makeText(this, (CharSequence) e, Toast.LENGTH_LONG).show();
+            showToast(String.valueOf(e));
+            //Toast.makeText(this, (CharSequence) e, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -359,7 +368,13 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         try {
             gac.disconnect();
         } catch (Exception e) {
-            Toast.makeText(this, (CharSequence) e, Toast.LENGTH_LONG).show();
+            showToast(String.valueOf(e));
+            //Toast.makeText(this, (CharSequence) e, Toast.LENGTH_LONG).show();
         }
     }
+
+    private void showToast(String s) {
+        Toast.makeText(this, s,Toast.LENGTH_LONG);
+    }
+
 }

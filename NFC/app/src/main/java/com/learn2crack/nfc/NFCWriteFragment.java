@@ -1,15 +1,17 @@
 package com.learn2crack.nfc;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.DialogFragment;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
+import android.content.IntentFilter;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
 import android.nfc.tech.Ndef;
+import android.nfc.tech.NdefFormatable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -61,28 +64,40 @@ public class NFCWriteFragment extends DialogFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener.onDialogDismissed();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void onNfcDetected(Ndef ndef, String messageToWrite) {
+    public void onNfcDetected(Ndef ndef, NdefFormatable format, String messageToWrite) {
         mProgress.setVisibility(View.VISIBLE);
-        writeToNfc(ndef, messageToWrite);
+        writeToNfc(ndef, format, messageToWrite);
     }
 
     @SuppressLint("SetTextI18n")
-    private void writeToNfc(Ndef ndef, String message) {
+    private void writeToNfc(Ndef ndef, NdefFormatable format, String message) {
         int iiSize, iMessageSize;
         String messageTotal, message2 = "";
 
         mTvMessage.setText(getString(R.string.message_write_progress));
 
+        ndef.getTag();
+
         if (ndef != null) {
 
             try {
                 ndef.connect();
+
+                if (!ndef.isWritable()) {
+                    showToast("Tag is read-only!");
+                    dismiss();
+                }
 
                 NdefMessage ndefMessage = ndef.getNdefMessage();
 
@@ -109,7 +124,13 @@ public class NFCWriteFragment extends DialogFragment {
 
                 } else {
                     mTvMessage.setText("Out-of-Memory!");
-                    ndef.makeReadOnly();
+                    boolean isCanMakeReadOnly = ndef.canMakeReadOnly();
+                    if(isCanMakeReadOnly) {
+                        ndef.makeReadOnly();
+                    }
+                    else{
+                        showToast("Cannot Lock This Tag!");
+                    }
                 }
             } catch (IOException | FormatException e) {
                 e.printStackTrace();
@@ -128,5 +149,27 @@ public class NFCWriteFragment extends DialogFragment {
                 }, 1000);
             }
         }
+
+        else{
+            if(format!= null){
+                try{
+                    format.connect();
+
+                    format.format(new NdefMessage(NdefRecord.createApplicationRecord(message)));
+
+                    showToast("Formated tag to NDEF!");
+                } catch (FormatException | IOException e) {
+                    showToast("Tag doesn't support NDEF!");
+                }
+            }
+
+        }
     }
+
+    private void showToast(String s) {
+        Context context = getActivity();
+        Toast.makeText(context, s, Toast.LENGTH_LONG).show();
+    }
+
+
 }
