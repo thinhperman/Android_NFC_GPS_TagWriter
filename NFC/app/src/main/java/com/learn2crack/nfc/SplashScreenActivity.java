@@ -25,7 +25,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                 tt.cancel();
             }
-        }, 5000);
+        }, 3000);
 
 
     }
