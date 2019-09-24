@@ -4,8 +4,8 @@
     <string name="message_write_success">Successfully written to Tag !</string>
     <string name="message_write_progress">Writing to Tag..</string>
     <string name="message_tag_detected">NFC Tag Detected !</string>
-    <string name="message_read_tag">Read from NFC Tag</string>
-    <string name="message_write_tag">Write to NFC Tag</string>
+    <string name="message_read_tag">Read Tag</string>
+    <string name="message_write_tag">Write Tag</string>
     <string name="message_tap_tag">Tap the NFC Tag to your device !</string>
     <string name="hint_message">Message</string>
     <string name="get_position">Get Position</string>
@@ -17,7 +17,7 @@
     <string name="status">Status:</string>
     <string name="set_timer">Set Timer</string>
     <string name="start">Start</string>
-    <string name="check_gps">Check GPS</string>
+    <string name="check_gps">GPS</string>
     <string name="seconds">seconds</string>
     <string name="remain">Remain:</string>
     <string name="timer">Timer:</string>
@@ -28,4 +28,5 @@
     <string name="tag_remaining_size">Tag Remaining Size:</string>
     <string name="timestamp">Timestamp:</string>
     <string name="id">Id:</string>
+    <string name="exit">Exit</string>
 </resources>

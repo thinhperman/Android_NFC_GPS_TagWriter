@@ -8,10 +8,11 @@
     tools:context="com.learn2crack.nfc.MainActivity">
 
     <LinearLayout
+        android:id="@+id/appInfo"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/appInfo"
-        android:gravity="center">
+        android:gravity="center"
+        android:padding="10dp">
 
         <DigitalClock
             android:id="@+id/tvClock"
@@ -21,17 +22,17 @@
             android:textStyle="bold" />
 
         <ImageView
-            android:contentDescription="@string/_5d_company"
             android:id="@+id/img5D"
             android:layout_width="150dp"
             android:layout_height="150dp"
+            android:contentDescription="@string/_5d_company"
             android:src="@drawable/logo5d" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/setupTimer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/setupTimer"
         android:layout_below="@id/appInfo"
         android:orientation="horizontal"
         android:padding="5dp">
@@ -39,95 +40,106 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:gravity="center_vertical"
             android:text="@string/timer"
-            android:textSize="20sp"
-            android:gravity="center_vertical"/>
+            android:textSize="20sp" />
 
         <EditText
-            android:inputType="text"
+            android:id="@+id/etTimer"
             android:layout_width="150dp"
             android:layout_height="match_parent"
             android:autofillHints="@string/seconds"
-            android:id="@+id/etTimer"
-            android:text="@string/five"
-            android:maxLines="1"/>
+            android:inputType="text"
+            android:maxLines="1"
+            android:text="@string/five" />
 
         <TextView
+            android:id="@+id/tvRemainTime"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/tvRemainTime"
-            android:textColor="@color/colorAccent"
-            android:textSize="20sp"
             android:gravity="center_vertical"
-            android:text="@string/remain"/>
+            android:text="@string/remain"
+            android:textColor="#255d00"
+            android:textSize="20sp" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/btnFunction"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_below="@+id/setupTimer"
-        android:gravity="center"
-        android:id="@+id/btnFunction"
-        android:layout_marginTop="10dp">
+        android:gravity="center">
 
         <Button
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
             android:id="@+id/startApp"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            android:layout_width="@dimen/btn_width"
+            android:layout_height="match_parent"
             android:text="@string/start"
-            style="@style/Widget.AppCompat.Button.Colored" />
+            android:textSize="20sp"
+            android:layout_marginRight="@dimen/btn_marginRight" />
 
         <Button
             android:id="@+id/cancelApp"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="100dp"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            android:layout_width="@dimen/btn_width"
             android:layout_height="match_parent"
-            android:text="Stop" />
+            android:text="Stop"
+            android:textSize="20sp"
+            android:layout_marginRight="@dimen/btn_marginRight" />
 
         <Button
-        android:id="@+id/getPos"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="100dp"
-        android:layout_height="match_parent"
-        android:text="@string/check_gps" />
+            android:id="@+id/getPos"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            android:layout_width="@dimen/btn_width"
+            android:layout_height="match_parent"
+            android:text="@string/check_gps"
+            android:textSize="20sp" />
+
     </LinearLayout>
 
+
     <LinearLayout
+        android:id="@+id/btnFunctionNFC"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:id="@+id/btnFunctionNFC"
         android:layout_below="@+id/btnFunction"
         android:gravity="center">
 
         <Button
             android:id="@+id/btn_write"
-            android:layout_width="100dp"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            android:layout_width="@dimen/btn_width"
             android:layout_height="match_parent"
             android:text="@string/message_write_tag"
-            style="@style/Widget.AppCompat.Button.Colored"/>
+            android:textSize="20sp"
+            android:layout_marginRight="@dimen/btn_marginRight" />
 
         <Button
             android:id="@+id/btn_read"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="100dp"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            android:layout_width="@dimen/btn_width"
             android:layout_height="match_parent"
-            android:text="@string/message_read_tag"/>
+            android:text="@string/message_read_tag"
+            android:textSize="20sp"
+            android:layout_marginRight="@dimen/btn_marginRight"/>
 
         <Button
             android:id="@+id/btn_exit"
-            android:layout_width="100dp"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            android:layout_width="@dimen/btn_width"
             android:layout_height="match_parent"
-            android:text="@string/message_write_tag"
-            style="@style/Widget.AppCompat.Button.Colored"/>
+            android:text="@string/exit"
+            android:textSize="20sp" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/posData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/btnFunctionNFC"
-        android:id="@+id/posData"
-        android:orientation="vertical"
-        android:layout_margin="10dp">
+        android:layout_margin="10dp"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -137,14 +149,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/id"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/tv_idTag"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/space"
-                android:id="@+id/tv_idTag"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -155,14 +167,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/ndef"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/tv_ndef"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/space"
-                android:id="@+id/tv_ndef"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -173,14 +185,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/size"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/tv_tag_size"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/space"
-                android:id="@+id/tv_tag_size"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -191,14 +203,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/status"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/space"
                 android:id="@+id/tv_message"
-                android:textSize="15sp"/>
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/space"
+                android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -207,18 +219,18 @@
             android:orientation="horizontal">
 
             <TextView
-                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="@string/latitude"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/space"
                 android:id="@+id/tv_lat"
-                android:textSize="15sp"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/space"
+                android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -227,18 +239,18 @@
             android:orientation="horizontal">
 
             <TextView
-                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="@string/longitude"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/tv_lng"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/space"
-                android:id="@+id/tv_lng"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -247,20 +259,21 @@
             android:orientation="horizontal">
 
             <TextView
-                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="@string/timestamp"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/tv_timestamp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/space"
-                android:id="@+id/tv_timestamp"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
         </LinearLayout>
 
 
     </LinearLayout>
+
 </RelativeLayout>

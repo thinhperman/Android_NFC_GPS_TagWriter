@@ -30,7 +30,6 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Timer;
@@ -38,9 +37,7 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements Listener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     CountDownTimer count;
-    Timer timer;
 
-    int index = 0;
     private Location location;
     private GoogleApiClient gac;
 
@@ -70,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Toast.makeText(this, "Hello!",Toast.LENGTH_LONG).show();
+
         initViews();
         initNFC();
     }
@@ -86,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         Button mBtGetPos = findViewById(R.id.getPos);
         Button mBtStart = findViewById(R.id.startApp);
         Button mBtStop = findViewById(R.id.cancelApp);
+        Button mBtExit = findViewById(R.id.btn_exit);
 
         etTimer = findViewById(R.id.etTimer);
         tvRemainTime = findViewById(R.id.tvRemainTime);
@@ -97,15 +97,31 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         mBtRead.setOnClickListener(view -> showReadFragment());
         mBtStart.setOnClickListener(view -> setTimer());
         mBtStop.setOnClickListener(view -> canelTimer());
+        mBtExit.setOnClickListener(view -> exitApp());
 
         setTimer();
     }
 
-    private void canelTimer(){
+    private void exitApp(){
+        count.cancel();
+        Toast.makeText(this, "Goodbye!",Toast.LENGTH_LONG).show();
+
+        final Timer tt = new Timer();
+        tt.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                finish();
+
+                tt.cancel();
+            }
+        }, 1000);
+    }
+
+    private void canelTimer() {
         count.cancel();
     }
 
-    private void startTimer(){
+    private void startTimer() {
         count.start();
     }
 
@@ -144,6 +160,16 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
             buildGoogleApiClient();
         }
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+//
+//            if (mNfcAdapter == null) {
+//                Toast.makeText(this, "This device doesn't support NFC.",
+//                        Toast.LENGTH_LONG).show();
+//                finish();
+//            } else if (!mNfcAdapter.isEnabled()) {
+//                Toast.makeText(this, "NFC is disabled.",
+//                        Toast.LENGTH_LONG).show();
+//                finish();
+//            }
     }
 
     private void getLocation() {
@@ -268,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         if (tag != null) {
             Toast.makeText(this, getString(R.string.message_tag_detected), Toast.LENGTH_SHORT).show();
 
-            tvIdTag.setText(Arrays.toString(tag.getId()));
+            tvIdTag.setText(" " + Arrays.toString(tag.getId()));
 
             Ndef ndef = Ndef.get(tag);
             String sType = String.valueOf(ndef.getType());
@@ -335,6 +361,5 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         } catch (Exception e) {
             Toast.makeText(this, (CharSequence) e, Toast.LENGTH_LONG).show();
         }
-        this.
     }
 }
