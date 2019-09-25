@@ -2,21 +2,17 @@ package com.learn2crack.nfc;
 
 import android.Manifest;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
-import android.nfc.NfcEvent;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -65,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
     private boolean isWrite = false;
 
     private NfcAdapter mNfcAdapter;
+    private PendingIntent pendingIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         setContentView(R.layout.activity_main);
 
         showToast("Hello!");
-        //Toast.makeText(this, "Hello!",Toast.LENGTH_LONG).show();
 
         initViews();
         initNFC();
@@ -107,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         setTimer();
     }
 
-    private void exitApp(){
+    private void exitApp() {
         count.cancel();
 
         showToast("Goodbye!");
@@ -126,10 +122,6 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
 
     private void canelTimer() {
         count.cancel();
-    }
-
-    private void startTimer() {
-        count.start();
     }
 
     private void setTimer() {
@@ -154,10 +146,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
                 }
             };
         } catch (NumberFormatException e) {
-            Context context = getApplicationContext();
-
             showToast(String.valueOf(e));
-            //Toast.makeText(context, (CharSequence) e, Toast.LENGTH_LONG).show();
         }
 
         count.start();
@@ -168,7 +157,9 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
             // Building the GoogleApi client
             buildGoogleApiClient();
         }
+
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
     }
 
     private void getLocation() {
@@ -271,10 +262,13 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         IntentFilter techDetected = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
         IntentFilter[] nfcIntentFilter = new IntentFilter[]{techDetected, tagDetected, ndefDetected};
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        String[][] techList = new String[3][1];
+        techList[0][0] = "android.nfc.tech.NdefFormatable";
+        techList[1][0] = "android.nfc.tech.NfcA";
+        techList[2][0] = "android.nfc.tech.Ndef";
+
         if (mNfcAdapter != null) {
-            mNfcAdapter.enableForegroundDispatch(this, pendingIntent, nfcIntentFilter, null);
+            mNfcAdapter.enableForegroundDispatch(this, pendingIntent, nfcIntentFilter, techList);
         }
 
         initNFC();
@@ -283,6 +277,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
     @Override
     protected void onPause() {
         super.onPause();
+
         if (mNfcAdapter != null)
             mNfcAdapter.disableForegroundDispatch(this);
     }
@@ -374,7 +369,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
     }
 
     private void showToast(String s) {
-        Toast.makeText(this, s,Toast.LENGTH_LONG);
+        Toast.makeText(this, s, Toast.LENGTH_LONG);
     }
 
 }

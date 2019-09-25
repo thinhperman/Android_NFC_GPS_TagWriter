@@ -43,6 +43,8 @@ public class NFCWriteFragment extends DialogFragment {
     private ProgressBar mProgress;
     private Listener mListener;
 
+    private NfcAdapter nfcAdapter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,6 +61,7 @@ public class NFCWriteFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
         mListener = (MainActivity) context;
         mListener.onDialogDisplayed();
     }
