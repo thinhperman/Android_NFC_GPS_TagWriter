@@ -354,7 +354,6 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
             gac.connect();
         } catch (Exception e) {
             showToast(String.valueOf(e));
-            //Toast.makeText(this, (CharSequence) e, Toast.LENGTH_LONG).show();
         }
     }
 
