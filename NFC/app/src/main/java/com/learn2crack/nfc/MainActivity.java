@@ -1,11 +1,15 @@
 package com.learn2crack.nfc;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.nfc.FormatException;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
@@ -16,6 +20,7 @@ import android.os.CountDownTimer;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +35,8 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Timer;
@@ -63,6 +70,13 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
     private NfcAdapter mNfcAdapter;
     private PendingIntent pendingIntent;
 
+    private TextView mTvMessage;
+    private ProgressBar mProgress;
+    private Listener mListener;
+
+    public int iiSize, iMessageSize;
+    public String messageTotal, message2 = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +94,9 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         tvLng = findViewById(R.id.tv_lng);
         tvNdef = findViewById(R.id.tv_ndef);
         tvIdTag = findViewById(R.id.tv_idTag);
+
+        mTvMessage = findViewById(R.id.tv_message);
+        mProgress = findViewById(R.id.progress);
 
         Button mBtWrite = findViewById(R.id.btn_write);
         Button mBtRead = findViewById(R.id.btn_read);
@@ -152,11 +169,23 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         count.start();
     }
 
+    private static String bytesToHex(byte[] hashInBytes) {
+
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hashInBytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+
+    }
+
     private void initNFC() {
         if (checkPlayServices()) {
             // Building the GoogleApi client
             buildGoogleApiClient();
         }
+
+
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
@@ -257,19 +286,14 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
     protected void onResume() {
         super.onResume();
 
+
+
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         IntentFilter ndefDetected = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
         IntentFilter techDetected = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
         IntentFilter[] nfcIntentFilter = new IntentFilter[]{techDetected, tagDetected, ndefDetected};
 
-        String[][] techList = new String[3][1];
-        techList[0][0] = "android.nfc.tech.NdefFormatable";
-        techList[1][0] = "android.nfc.tech.NfcA";
-        techList[2][0] = "android.nfc.tech.Ndef";
-
-        if (mNfcAdapter != null) {
-            mNfcAdapter.enableForegroundDispatch(this, pendingIntent, nfcIntentFilter, techList);
-        }
+        mNfcAdapter.enableForegroundDispatch(this, pendingIntent, nfcIntentFilter, null);
 
         initNFC();
     }
@@ -278,14 +302,15 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
     protected void onPause() {
         super.onPause();
 
-        if (mNfcAdapter != null)
-            mNfcAdapter.disableForegroundDispatch(this);
+        mNfcAdapter.disableForegroundDispatch(this);
     }
 
+    @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
         Log.d(TAG, "onNewIntent: " + intent.getAction());
@@ -293,33 +318,37 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         if (tag != null) {
             //Toast.makeText(this, getString(R.string.message_tag_detected), Toast.LENGTH_SHORT).show();
 
-            tvIdTag.setText(" " + Arrays.toString(tag.getId()));
+            try {
+                tvIdTag.setText(" " + bytesToHex(tag.getId()));
 
-            Ndef ndef = Ndef.get(tag);
+                Ndef ndef = Ndef.get(tag);
 
-            NdefFormatable format = NdefFormatable.get(tag);
+                NdefFormatable format = NdefFormatable.get(tag);
 
-            String sType = String.valueOf(ndef.getType());
+                String sType = String.valueOf(ndef.getType());
 
-            String[] output = sType.split("ndef.");
+                String[] output = sType.split("ndef.");
 
-            int iiSize = ndef.getMaxSize();
+                int iiSize = ndef.getMaxSize();
 
-            tvNdef.setText(" " + output[1]);
-            tvTagSize.setText(" " + iiSize + " " + "bytes");
+                tvNdef.setText(" " + output[1]);
+                tvTagSize.setText(" " + iiSize + " " + "bytes");
 
-            getLocation();
+                getLocation();
 
-            if (isDialogDisplayed) {
-                if (isWrite) {
-                    getLocation();
-                    String messageToWrite = msToWrite;
-                    mNfcWriteFragment = (NFCWriteFragment) getFragmentManager().findFragmentByTag(NFCWriteFragment.TAG);
-                    mNfcWriteFragment.onNfcDetected(ndef, format, messageToWrite);
-                } else {
-                    mNfcReadFragment = (NFCReadFragment) getFragmentManager().findFragmentByTag(NFCReadFragment.TAG);
-                    mNfcReadFragment.onNfcDetected(ndef);
+                if (isDialogDisplayed) {
+                    if (isWrite) {
+                        getLocation();
+                        String messageToWrite = msToWrite;
+                        mNfcWriteFragment = (NFCWriteFragment) getFragmentManager().findFragmentByTag(NFCWriteFragment.TAG);
+                        mNfcWriteFragment.onNfcDetected(ndef, format, messageToWrite);
+                    } else {
+                        mNfcReadFragment = (NFCReadFragment) getFragmentManager().findFragmentByTag(NFCReadFragment.TAG);
+                        mNfcReadFragment.onNfcDetected(ndef);
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -360,6 +389,7 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
     protected void onStop() {
         super.onStop();
         try {
+            finish();
             gac.disconnect();
         } catch (Exception e) {
             showToast(String.valueOf(e));
@@ -371,4 +401,81 @@ public class MainActivity extends AppCompatActivity implements Listener, GoogleA
         Toast.makeText(this, s, Toast.LENGTH_LONG);
     }
 
+    private void writeToNfc(Ndef ndef, NdefFormatable format, String message) {
+        mTvMessage.setText(getString(R.string.message_write_progress));
+        if (ndef != null) {
+
+            ndef.getTag();
+
+            try {
+                ndef.connect();
+
+                if (!ndef.isWritable()) {
+                    showToast("Tag is read-only!");
+                    mNfcWriteFragment.dismiss();
+                }
+
+                NdefMessage ndefMessage = ndef.getNdefMessage();
+
+                try {
+                    message2 = new String(ndefMessage.getRecords()[0].getPayload());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                messageTotal = message2 + " " + message + " ";
+
+                Log.d(TAG, "readFromNFC: " + messageTotal);
+
+                iiSize = ndef.getMaxSize();
+                iMessageSize = messageTotal.length();
+
+                if (iMessageSize < iiSize) {
+                    NdefRecord mimeRecord = NdefRecord.createMime("text/plain", messageTotal.getBytes(Charset.forName("US-ASCII")));
+
+                    ndef.writeNdefMessage(new NdefMessage(mimeRecord));
+                    ndef.close();
+                    //Write Successful
+                    mTvMessage.setText(getString(R.string.message_write_success));
+
+                } else {
+                    mTvMessage.setText("Out-of-Memory!");
+                    boolean isCanMakeReadOnly = ndef.canMakeReadOnly();
+                    if (isCanMakeReadOnly) {
+                        ndef.makeReadOnly();
+                    } else {
+                        showToast("Cannot Lock This Tag!");
+                    }
+                }
+            } catch (IOException | FormatException e) {
+                e.printStackTrace();
+                mTvMessage.setText(getString(R.string.message_write_error));
+
+            } finally {
+//                mProgress.setVisibility(View.GONE);
+                final Timer tt = new Timer();
+                tt.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        mNfcWriteFragment.dismiss();
+
+                        tt.cancel();
+                    }
+                }, 1000);
+            }
+        } else {
+            if (format != null) {
+                try {
+                    format.connect();
+
+                    format.format(new NdefMessage(NdefRecord.createApplicationRecord(message)));
+
+                    showToast("Formated tag to NDEF!");
+                } catch (FormatException | IOException e) {
+                    showToast("Tag doesn't support NDEF!");
+                }
+            }
+
+        }
+    }
 }

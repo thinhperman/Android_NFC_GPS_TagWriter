@@ -2,14 +2,11 @@ package com.learn2crack.nfc;
 
 import android.annotation.SuppressLint;
 import android.app.DialogFragment;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
-import android.nfc.NfcAdapter;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.Build;
@@ -27,6 +24,7 @@ import androidx.annotation.RequiresApi;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.security.PublicKey;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,7 +33,6 @@ public class NFCWriteFragment extends DialogFragment {
     public static final String TAG = NFCWriteFragment.class.getSimpleName();
 
     public static NFCWriteFragment newInstance() {
-
         return new NFCWriteFragment();
     }
 
@@ -43,7 +40,8 @@ public class NFCWriteFragment extends DialogFragment {
     private ProgressBar mProgress;
     private Listener mListener;
 
-    private NfcAdapter nfcAdapter;
+    public int iiSize, iMessageSize;
+    public String messageTotal, message2 = "";
 
     @Nullable
     @Override
@@ -85,14 +83,10 @@ public class NFCWriteFragment extends DialogFragment {
 
     @SuppressLint("SetTextI18n")
     private void writeToNfc(Ndef ndef, NdefFormatable format, String message) {
-        int iiSize, iMessageSize;
-        String messageTotal, message2 = "";
-
         mTvMessage.setText(getString(R.string.message_write_progress));
-
-        ndef.getTag();
-
         if (ndef != null) {
+
+            ndef.getTag();
 
             try {
                 ndef.connect();
@@ -128,10 +122,9 @@ public class NFCWriteFragment extends DialogFragment {
                 } else {
                     mTvMessage.setText("Out-of-Memory!");
                     boolean isCanMakeReadOnly = ndef.canMakeReadOnly();
-                    if(isCanMakeReadOnly) {
+                    if (isCanMakeReadOnly) {
                         ndef.makeReadOnly();
-                    }
-                    else{
+                    } else {
                         showToast("Cannot Lock This Tag!");
                     }
                 }
@@ -151,11 +144,9 @@ public class NFCWriteFragment extends DialogFragment {
                     }
                 }, 1000);
             }
-        }
-
-        else{
-            if(format!= null){
-                try{
+        } else {
+            if (format != null) {
+                try {
                     format.connect();
 
                     format.format(new NdefMessage(NdefRecord.createApplicationRecord(message)));
